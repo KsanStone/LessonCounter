@@ -5,6 +5,7 @@ import time
 from FpsCounter import FPSCounter
 from LessonSchedule import get_interval_index, get_interval, get_intervals
 from TimingType import TimingType
+from ui.impl.component.Blank import Blank
 from ui.impl.component.Countdown import Countdown
 from ui.impl.component.CurrentPeriod import CurrentPeriod
 from ui.impl.component.Label import Label
@@ -46,20 +47,22 @@ def construct_ui():
     after_periods = VPane()
 
     current_lessons.children.append(before_periods)
-    filler_label = Label()
-    filler_label.preferred_height = 1
-    current_lessons.children.append(filler_label)
+    current_lessons.children.append(Blank(1, 1))
     current_lessons.children.append(current_period)
-    filler_label = Label()
-    filler_label.preferred_height = 1
-    current_lessons.children.append(filler_label)
+    current_lessons.children.append(Blank(1, 1))
     current_lessons.children.append(after_periods)
 
-    # Countdown til end of year
+    # Countdowns
     countdown_pane = VPane()
-    end_of_school_year = Countdown(datetime.datetime(year=2023, month=6, day=26, hour=12, minute=0, second=0))
+    end_of_school_year = Countdown(datetime.datetime(year=2023, month=6, day=26, hour=12, minute=0, second=0),
+                                   "End of school year")
     end_of_school_year.preferred_height = 3
+    nearest_weekend = Countdown(None, "Weekend")
+    nearest_weekend.preferred_height = 3
+
     countdown_pane.children.append(end_of_school_year)
+    countdown_pane.children.append(Blank(1, 1))
+    countdown_pane.children.append(nearest_weekend)
 
     main_content_pane.children.append(current_lessons)
     main_content_pane.children.append(countdown_pane)
@@ -68,10 +71,14 @@ def construct_ui():
     root_pane.children.append(main_content_pane)
     root_pane.children.append(quit_info_label)
 
-    return root_pane, fps_label, current_period, before_periods, after_periods, end_of_school_year
+    return root_pane, fps_label, current_period, before_periods, after_periods, end_of_school_year, nearest_weekend
 
 
 def populate_past_and_future_interval_lists(period_index, before_periods, after_periods):
+
+    if period_index == -1:
+        return
+
     past_intervals = get_intervals()[:period_index]
     future_intervals = get_intervals()[period_index + 1:]
 
@@ -98,10 +105,16 @@ def populate_past_and_future_interval_lists(period_index, before_periods, after_
     before_periods.layout()
 
 
+def find_nearest_weekend(today) -> datetime.datetime:
+    days_ahead = (5 - today.weekday()) % 7  # Number of days until next Friday
+    nearest_weekend = today + datetime.timedelta(days=days_ahead)
+    return nearest_weekend
+
+
 def main(stdscr):
     fps_counter = FPSCounter()
     init_colours()
-    ui, fps_label, current_period, before_periods, after_periods, end_of_school_year = construct_ui()
+    ui, fps_label, current_period, before_periods, after_periods, end_of_school_year, nearest_weekend = construct_ui()
     curses.curs_set(0)
     stdscr.nodelay(True)
 
@@ -113,13 +126,15 @@ def main(stdscr):
         interval_index = get_interval_index(now)
         interval = get_interval(interval_index)
 
-        if interval.type != TimingType.NONE:
-            current_period.update(interval, now)
+        current_period.update(interval, now)
 
         end_of_school_year.now = now
+        nearest_weekend.now = now
+        nearest_weekend.target = find_nearest_weekend(now)
         end_of_school_year.update()
+        nearest_weekend.update()
 
-        fps_label.text = f'{fps_counter.fps():,d} fps | {fps_counter.last_frame_time()/1_000_000:.2f}ms'
+        fps_label.text = f'{fps_counter.fps():,d} fps | {fps_counter.last_frame_time() / 1_000_000:.2f}ms'
 
         before_periods.children.clear()
         after_periods.children.clear()
@@ -133,7 +148,7 @@ def main(stdscr):
         if stdscr.getch() == ord('q'):
             break
 
-        # time.sleep(0.25)
+        time.sleep(0.25)
         fps_counter.tick()
 
 

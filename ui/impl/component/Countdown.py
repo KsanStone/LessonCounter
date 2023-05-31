@@ -8,10 +8,12 @@ from ui.impl.pane.VPane import VPane
 class Countdown(VPane):
     target: datetime.datetime
     now: datetime.datetime
+    label: str
 
-    def __init__(self, target: datetime.datetime):
+    def __init__(self, target: datetime.datetime = None, label: str = None):
         super().__init__()
         self.target = target
+        self.label = label
 
     def update(self):
         now = self.now if self.now is not None else datetime.datetime.now()
@@ -26,7 +28,7 @@ class Countdown(VPane):
             return
 
         self.children = [
-            Label("Counting down to:", curses.color_pair(3)),
+            Label("Counting down to:" if self.label is None else self.label, curses.color_pair(3)),
             Label(str(self.target), curses.color_pair(4)),
             Label(str(remaining), curses.color_pair(5)),
         ]

@@ -13,7 +13,7 @@ class TimingInterval:
         self.end = end
 
     def __str__(self):
-        return f'{self.type.value} - {self.start} -> {self.end}'
+        return f'{self.type.value: <6} - {self.start} -> {self.end}'
 
     def msg(self):
         parts = str(self).split(' ')
