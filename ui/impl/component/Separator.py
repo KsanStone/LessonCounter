@@ -27,10 +27,8 @@ class Separator(Component):
 
     def blit(self, wrapper: ScreenWrapper):
         length = self.__get_len()
-        print(self.orientation, length, self.width, self.height)
         pos = align_2d((self.width, self.height),
                        (length, 1) if self.orientation == Orientation.HORIZONTAL else (1, length), self.alignment)
-        print(pos)
         if self.orientation == Orientation.HORIZONTAL:
             wrapper.pretty_line_x(pos[1], pos[0], pos[0] + length - 1)
         elif self.orientation == Orientation.VERTICAL:
