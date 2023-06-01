@@ -9,9 +9,11 @@ from ui.impl.component.Blank import Blank
 from ui.impl.component.Countdown import Countdown
 from ui.impl.component.CurrentPeriod import CurrentPeriod
 from ui.impl.component.Label import Label
+from ui.impl.component.Separator import Separator
 from ui.impl.pane.HPane import HPane
 from ui.impl.pane.VPane import VPane
 from ui.util.Alignment import Alignment
+from ui.util.Orientation import Orientation
 from ui.util.ScreenWrapper import ScreenWrapper
 
 
@@ -65,6 +67,7 @@ def construct_ui():
     countdown_pane.children.append(nearest_weekend)
 
     main_content_pane.children.append(current_lessons)
+    main_content_pane.children.append(Separator(orientation=Orientation.VERTICAL, width=1))
     main_content_pane.children.append(countdown_pane)
 
     root_pane.children.append(fps_label)

@@ -1,3 +1,4 @@
+from ui.util.ExtendedAsciiLine import ExtendedAsciiLine
 from ui.util.Message import Message
 
 
@@ -9,9 +10,11 @@ class ScreenWrapper:
         self.stdscr = stdscr
         self.default_color = default_color
 
+    def __get_color(self, color):
+        return color if color is not None else self.default_color
+
     def addstr(self, text, y: int = None, x: int = None, color=None):
-        if color is None:
-            color = self.default_color
+        color = self.__get_color(color)
 
         if y is not None and x is not None:
             self.stdscr.addstr(y + self.y, x + self.x, text, color)
@@ -29,6 +32,18 @@ class ScreenWrapper:
 
         for i in range(1, len(text.parts)):
             self.stdscr.addstr(text.parts[i][0], text.parts[i][1])
+
+    def addch(self, char: str, y: int = None, x: int = None, color=None):
+        color = self.__get_color(color)
+        self.stdscr.addch(self.y + y, self.x + x, char[0], color)
+
+    def pretty_line_x(self, y, x_1, x_2, color=None):
+        for x in range(x_1, x_2 + 1):
+            self.addch(ExtendedAsciiLine.HORIZONTAL.value, y, x, color)
+
+    def pretty_line_y(self, x, y_1, y_2, color=None):
+        for y in range(y_1, y_2 + 1):
+            self.addch(ExtendedAsciiLine.VERTICAL.value, y, x, color)
 
     def move(self, y, x):
         self.stdscr.move(self.y + y, self.x + x)
