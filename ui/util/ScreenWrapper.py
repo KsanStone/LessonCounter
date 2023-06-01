@@ -45,6 +45,12 @@ class ScreenWrapper:
         for y in range(y_1, y_2 + 1):
             self.addch(ExtendedAsciiLine.VERTICAL.value, y, x, color)
 
+    def fill(self, char: str, x: int, y: int, width: int, height: int, color=None):
+        color = self.__get_color(color)
+        filler_str = char[0] * width
+        for y in range(y, y + height):
+            self.stdscr.addstr(self.y + y, self.x + x, filler_str, color)
+
     def move(self, y, x):
         self.stdscr.move(self.y + y, self.x + x)
 

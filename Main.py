@@ -56,7 +56,7 @@ def construct_ui():
 
     # Countdowns
     countdown_pane = VPane()
-    end_of_school_year = Countdown(datetime.datetime(year=2023, month=6, day=26, hour=12, minute=0, second=0),
+    end_of_school_year = Countdown(datetime.datetime(year=2023, month=6, day=23, hour=12, minute=0, second=0),
                                    "End of school year")
     end_of_school_year.preferred_height = 3
     nearest_weekend = Countdown(None, "Weekend")
@@ -151,7 +151,7 @@ def main(stdscr):
         if stdscr.getch() == ord('q'):
             break
 
-        time.sleep(0.25)
+        time.sleep(0.1)
         fps_counter.tick()
 
 
