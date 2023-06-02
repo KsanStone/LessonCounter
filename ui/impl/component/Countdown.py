@@ -19,16 +19,19 @@ class Countdown(VPane):
         now = self.now if self.now is not None else datetime.datetime.now()
 
         if self.target is None:
-            self.children = [Label("No target", curses.color_pair(1))]
+            self.clear()
+            self.append_all([Label("No target", curses.color_pair(1))])
             return
 
         remaining = self.target - now
         if remaining.total_seconds() < 0:
-            self.children = [Label("Completed", curses.color_pair(2))]
+            self.clear()
+            self.append_all([Label("Completed", curses.color_pair(2))])
             return
 
-        self.children = [
+        self.clear()
+        self.append_all([
             Label("Counting down to:" if self.label is None else self.label, curses.color_pair(3)),
             Label(str(self.target), curses.color_pair(4)),
             Label(str(remaining), curses.color_pair(5)),
-        ]
+        ])

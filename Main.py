@@ -5,6 +5,7 @@ import time
 from FpsCounter import FPSCounter
 from LessonSchedule import get_interval_index, get_interval, get_intervals
 from TimingType import TimingType
+from ui.application.ApplicationManager import ApplicationManager
 from ui.impl.component.Blank import Blank
 from ui.impl.component.Countdown import Countdown
 from ui.impl.component.CurrentPeriod import CurrentPeriod
@@ -48,11 +49,11 @@ def construct_ui():
     before_periods = VPane()
     after_periods = VPane()
 
-    current_lessons.children.append(before_periods)
-    current_lessons.children.append(Blank(1, 1))
-    current_lessons.children.append(current_period)
-    current_lessons.children.append(Blank(1, 1))
-    current_lessons.children.append(after_periods)
+    current_lessons.append(before_periods)
+    current_lessons.append(Blank(1, 1))
+    current_lessons.append(current_period)
+    current_lessons.append(Blank(1, 1))
+    current_lessons.append(after_periods)
 
     # Countdowns
     countdown_pane = VPane()
@@ -62,17 +63,17 @@ def construct_ui():
     nearest_weekend = Countdown(None, "Weekend")
     nearest_weekend.preferred_height = 3
 
-    countdown_pane.children.append(end_of_school_year)
-    countdown_pane.children.append(Blank(1, 1))
-    countdown_pane.children.append(nearest_weekend)
+    countdown_pane.append(end_of_school_year)
+    countdown_pane.append(Blank(1, 1))
+    countdown_pane.append(nearest_weekend)
 
-    main_content_pane.children.append(current_lessons)
-    main_content_pane.children.append(Separator(orientation=Orientation.VERTICAL, width=1))
-    main_content_pane.children.append(countdown_pane)
+    main_content_pane.append(current_lessons)
+    main_content_pane.append(Separator(orientation=Orientation.VERTICAL, width=1))
+    main_content_pane.append(countdown_pane)
 
-    root_pane.children.append(fps_label)
-    root_pane.children.append(main_content_pane)
-    root_pane.children.append(quit_info_label)
+    root_pane.append(fps_label)
+    root_pane.append(main_content_pane)
+    root_pane.append(quit_info_label)
 
     return root_pane, fps_label, current_period, before_periods, after_periods, end_of_school_year, nearest_weekend
 
@@ -89,19 +90,19 @@ def populate_past_and_future_interval_lists(period_index, before_periods, after_
     extra_future = max(min(after_periods.height - 1, len(future_intervals)), 0)
 
     offset = len(past_intervals) - extra_past
-    before_periods.children.append(
+    before_periods.append(
         Label(f'{offset} more' if offset > 0 else '', color=curses.color_pair(4), alignment=Alignment.BOTTOM_CENTER))
     for i in range(0, extra_past):
         label = Label(past_intervals[i + offset].misc_msg(i + offset), alignment=Alignment.TOP_CENTER)
         label.preferred_height = 1
-        before_periods.children.append(label)
+        before_periods.append(label)
 
     for i in range(0, extra_future):
         label = Label(future_intervals[i].misc_msg(i + extra_past + offset + 1), alignment=Alignment.TOP_CENTER)
         label.preferred_height = 1
-        after_periods.children.append(label)
+        after_periods.append(label)
     offset = len(future_intervals) - extra_future
-    after_periods.children.append(
+    after_periods.append(
         Label(f'{offset} more' if offset > 0 else '', color=curses.color_pair(4), alignment=Alignment.TOP_CENTER))
 
     after_periods.layout()
@@ -118,12 +119,15 @@ def main(stdscr):
     fps_counter = FPSCounter()
     init_colours()
     ui, fps_label, current_period, before_periods, after_periods, end_of_school_year, nearest_weekend = construct_ui()
+    app_manager = ApplicationManager(ui, stdscr)
     curses.curs_set(0)
+    stdscr.keypad(True)
     stdscr.nodelay(True)
 
     while True:
-        height, width = stdscr.getmaxyx()
-        ui.width, ui.height = width, height
+        keycode = stdscr.getch()
+        if app_manager.handle_key(keycode):
+            break
 
         now = datetime.datetime.now()
         interval_index = get_interval_index(now)
@@ -139,17 +143,12 @@ def main(stdscr):
 
         fps_label.text = f'{fps_counter.fps():,d} fps | {fps_counter.last_frame_time() / 1_000_000:.2f}ms'
 
-        before_periods.children.clear()
-        after_periods.children.clear()
+        before_periods.clear()
+        after_periods.clear()
 
-        ui.layout()
+        app_manager.layout()
         populate_past_and_future_interval_lists(interval_index, before_periods, after_periods)
-        stdscr.erase()
-        ui.blit(ScreenWrapper(stdscr, 0, 0, curses.color_pair(6)))
-        stdscr.refresh()
-
-        if stdscr.getch() == ord('q'):
-            break
+        app_manager.blit()
 
         time.sleep(0.1)
         fps_counter.tick()

@@ -20,10 +20,10 @@ class CurrentPeriod(VPane):
         self.remaining_label = Label("", color=curses.color_pair(3), alignment=Alignment.TOP_CENTER)
         self.progress_bar = ProgressBar(horizontally_centered=True, width=40)
 
-        self.children.append(self.date_label)
-        self.children.append(self.period_label)
-        self.children.append(self.remaining_label)
-        self.children.append(self.progress_bar)
+        self.append(self.date_label)
+        self.append(self.period_label)
+        self.append(self.remaining_label)
+        self.append(self.progress_bar)
 
     def update(self, period: TimingInterval, now: datetime.datetime):
         if period.type == TimingType.NONE:
