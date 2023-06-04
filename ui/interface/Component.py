@@ -13,6 +13,11 @@ class Component:
     preferred_width: int = None
     preferred_height: int = None
     parent: 'Pane' = None
+    focusable: bool = False
+    focused: bool = False
 
     def blit(self, wrapper: ScreenWrapper):
+        pass
+
+    def handle_key(self, keycode):
         pass
