@@ -11,6 +11,7 @@ from ui.impl.component.Countdown import Countdown
 from ui.impl.component.CurrentPeriod import CurrentPeriod
 from ui.impl.component.Label import Label
 from ui.impl.component.Separator import Separator
+from ui.impl.component.TextField import TextField
 from ui.impl.pane.HPane import HPane
 from ui.impl.pane.VPane import VPane
 from ui.util.Alignment import Alignment
@@ -30,14 +31,18 @@ def init_colours():
     curses.init_pair(9, curses.COLOR_BLACK, curses.COLOR_BLUE)
 
 
+def handle_command(command: str) -> str:
+    return ''
+
+
 def construct_ui():
     root_pane = VPane()
 
     # General information
     fps_label = Label("Fps counter not yet initialized", color=curses.color_pair(4))
     fps_label.preferred_height = 1
-    quit_info_label = Label("Press 'q' to quit", color=curses.color_pair(4))
-    quit_info_label.preferred_height = 1
+    command_field = TextField(handle_command)
+    command_field.preferred_height = 1
 
     main_content_pane = HPane()
 
@@ -73,7 +78,7 @@ def construct_ui():
 
     root_pane.append(fps_label)
     root_pane.append(main_content_pane)
-    root_pane.append(quit_info_label)
+    root_pane.append(command_field)
 
     return root_pane, fps_label, current_period, before_periods, after_periods, end_of_school_year, nearest_weekend
 

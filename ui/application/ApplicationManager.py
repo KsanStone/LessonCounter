@@ -1,4 +1,4 @@
-import curses
+import curses.ascii
 
 from ui.interface.Component import Component
 from ui.interface.Pane import Pane
@@ -22,10 +22,16 @@ class ApplicationManager:
         self.quit_key = quit_key
 
     def handle_key(self, keycode):
-        if keycode == ord(self.quit_key):
+        if keycode == ord(self.quit_key) and self.__focused is None:
             return True
         elif keycode == ord('\t'):
             self.advance_focus()
+        elif keycode == curses.ascii.ESC:
+            if self.__focused is not None:
+                self.__focused.focused = False
+                self.__focused = None
+        elif self.__focused is not None:
+            self.__focused.handle_key(keycode)
         return False
 
     def advance_focus(self):
