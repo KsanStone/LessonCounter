@@ -103,7 +103,7 @@ class CommandArguments:
         positional = []
         for i, arg in enumerate(self.positional_arguments):
             if arg.required and i + named_args_end >= len(args):
-                raise ValueError(f'Missing {i + named_args_end - len(args)} positional arguments')
+                raise ValueError(f'Missing {(i + named_args_end) - len(args) + 1} positional arguments')
             elif not arg.required and i + named_args_end >= len(args):
                 break
             else:

@@ -30,7 +30,7 @@ class ApplicationManager:
             if self.__focused is not None:
                 self.__focused.focused = False
                 self.__focused = None
-        elif self.__focused is not None:
+        elif self.__focused is not None and keycode != -1:
             self.__focused.handle_key(keycode)
         return False
 

@@ -7,13 +7,14 @@ from LessonSchedule import get_interval_index, get_interval, get_intervals
 from Settings import Settings
 from commandProcessor.processor.CommandProcessor import CommandProcessor
 from commands.FpsCommand import FpsCommand
+from commands.QuitCommand import QuitCommand
 from ui.application.ApplicationManager import ApplicationManager
 from ui.impl.component.Blank import Blank
+from ui.impl.component.CommandField import CommandField
 from ui.impl.component.Countdown import Countdown
 from ui.impl.component.CurrentPeriod import CurrentPeriod
 from ui.impl.component.Label import Label
 from ui.impl.component.Separator import Separator
-from ui.impl.component.TextField import TextField
 from ui.impl.pane.HPane import HPane
 from ui.impl.pane.VPane import VPane
 from ui.util.Alignment import Alignment
@@ -26,6 +27,7 @@ command_processor = CommandProcessor()
 def init_command_processor():
     global settings
     command_processor.register(FpsCommand(settings))
+    command_processor.register(QuitCommand())
 
 
 def init_colours():
@@ -40,21 +42,13 @@ def init_colours():
     curses.init_pair(9, curses.COLOR_BLACK, curses.COLOR_BLUE)
 
 
-def handle_command(command: str) -> str:
-    try:
-        command_processor.process(command)
-        return ''
-    except ValueError as e:
-        return str(e)
-
-
 def construct_ui():
     root_pane = VPane()
 
     # General information
     fps_label = Label("Fps counter not yet initialized", color=curses.color_pair(4))
     fps_label.preferred_height = 1
-    command_field = TextField(submit=handle_command, prefix=">|")
+    command_field = CommandField(processor=command_processor)
     command_field.preferred_height = 1
 
     main_content_pane = HPane()

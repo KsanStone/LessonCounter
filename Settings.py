@@ -1,4 +1,4 @@
 class Settings:
 
     def __init__(self):
-        self.fps = 5
+        self.fps = 30
