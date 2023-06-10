@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 from commandProcessor.arguments.CommandArguments import CommandArguments
+from commandProcessor.arguments.default.FloatArgument import IntArgument
 from commandProcessor.arguments.default.StringArgument import StringArgument
 
 
@@ -26,6 +27,15 @@ class TestCommandArguments(TestCase):
         argument_string = 'arg1 arg2 arg3'
         expected_arguments = ['arg1', 'arg2', 'arg3']
         self.assertEqual(CommandArguments.split_argument_string(argument_string), expected_arguments)
+
+    def test_parse_positional_arguments(self):
+        args = CommandArguments()
+        args.add_positional(IntArgument(required=True, min_val=1, max_val=10000))
+        command_string = "1000"
+
+        parsed = args.parse(command_string)
+
+        self.assertEqual(parsed.positional_arguments[0], 1000)
 
     def test_parse_with_missing_named_arguments(self):
         args = CommandArguments()

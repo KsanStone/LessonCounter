@@ -25,6 +25,7 @@ class CommandArguments:
         arg.name = 'pos_arg'
         if len(self.positional_arguments) > 0 and arg.required and not self.positional_arguments[-1].required:
             raise ValueError('Required positional arguments cannot exist after non-required positional arguments')
+        self.positional_arguments.append(arg)
 
     @staticmethod
     def split_argument_string(argument_string: str):
@@ -78,7 +79,6 @@ class CommandArguments:
                 continue
 
             if not arg.startswith('-'):
-                named_args_end = i
                 break
 
             arg_name = arg[1:]
@@ -93,8 +93,10 @@ class CommandArguments:
             elif cmd_arg.expects_value:
                 gathered_args[arg_name] = cmd_arg.parse(args[i + 1])
                 next_consumed = True
+                named_args_end = i + 2
             else:
                 gathered_args[arg_name] = None
+                named_args_end = i + 1
         CommandArguments.check_missing_arguments(self.named_arguments, gathered_args)
 
         # gather positional arguments
