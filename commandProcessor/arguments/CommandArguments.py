@@ -1,5 +1,5 @@
-from command.arguments.CommandArgument import CommandArgument
-from command.processor.ParsedCommandArguments import ParsedCommandArguments
+from commandProcessor.arguments.CommandArgument import CommandArgument
+from commandProcessor.processor.ParsedCommandArguments import ParsedCommandArguments
 
 
 class CommandArguments:

@@ -1,4 +1,4 @@
-from command.Command import Command
+from commandProcessor.Command import Command
 
 
 class CommandProcessor:
@@ -6,6 +6,12 @@ class CommandProcessor:
 
     def __init__(self):
         self.commands = {}
+
+    def register(self, command: Command):
+        self.commands[command.name] = command
+
+    def remove(self, command):
+        del self.commands[command.name]
 
     def process(self, command: str):
         i = command.find(' ')
