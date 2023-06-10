@@ -5,15 +5,18 @@ from typing import Callable
 
 class TextField(Component):
     text: str
+    prefix: str
     submit: Callable[[str], str]
 
-    def __init__(self, submit: Callable[[str], str] = lambda x: ''):
+    def __init__(self, text: str = '', prefix: str = '', submit: Callable[[str], str] = lambda x: ''):
         self.focusable = True
         self.submit = submit
-        self.text = ""
+        self.text = text
+        self.prefix = prefix
 
     def blit(self, wrapper: ScreenWrapper):
-        wrapper.addstr(self.text[:self.width], 0, 0)
+        wrapper.addstr(self.prefix, 0, 0)
+        wrapper.addstr(self.text[:(self.width - len(self.prefix))])
 
     def handle_key(self, keycode):
         try:

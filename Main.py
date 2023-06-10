@@ -54,7 +54,7 @@ def construct_ui():
     # General information
     fps_label = Label("Fps counter not yet initialized", color=curses.color_pair(4))
     fps_label.preferred_height = 1
-    command_field = TextField(handle_command)
+    command_field = TextField(submit=handle_command, prefix=">|")
     command_field.preferred_height = 1
 
     main_content_pane = HPane()
