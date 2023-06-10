@@ -4,7 +4,9 @@ import time
 
 from FpsCounter import FPSCounter
 from LessonSchedule import get_interval_index, get_interval, get_intervals
-from TimingType import TimingType
+from Settings import Settings
+from commandProcessor.processor.CommandProcessor import CommandProcessor
+from commands.FpsCommand import FpsCommand
 from ui.application.ApplicationManager import ApplicationManager
 from ui.impl.component.Blank import Blank
 from ui.impl.component.Countdown import Countdown
@@ -16,7 +18,14 @@ from ui.impl.pane.HPane import HPane
 from ui.impl.pane.VPane import VPane
 from ui.util.Alignment import Alignment
 from ui.util.Orientation import Orientation
-from ui.util.ScreenWrapper import ScreenWrapper
+
+settings = Settings()
+command_processor = CommandProcessor()
+
+
+def init_command_processor():
+    global settings
+    command_processor.register(FpsCommand(settings))
 
 
 def init_colours():
@@ -32,7 +41,11 @@ def init_colours():
 
 
 def handle_command(command: str) -> str:
-    return ''
+    try:
+        command_processor.process(command)
+        return ''
+    except ValueError as e:
+        return str(e)
 
 
 def construct_ui():
@@ -84,7 +97,6 @@ def construct_ui():
 
 
 def populate_past_and_future_interval_lists(period_index, before_periods, after_periods):
-
     if period_index == -1:
         return
 
@@ -123,6 +135,7 @@ def find_nearest_weekend(today) -> datetime.datetime:
 def main(stdscr):
     fps_counter = FPSCounter()
     init_colours()
+    init_command_processor()
     ui, fps_label, current_period, before_periods, after_periods, end_of_school_year, nearest_weekend = construct_ui()
     app_manager = ApplicationManager(ui, stdscr)
     curses.curs_set(0)
@@ -155,7 +168,8 @@ def main(stdscr):
         populate_past_and_future_interval_lists(interval_index, before_periods, after_periods)
         app_manager.blit()
 
-        time.sleep(0.1)
+        if settings.fps < 10000:
+            time.sleep(1 / settings.fps)
         fps_counter.tick()
 
 
