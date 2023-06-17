@@ -20,7 +20,8 @@ class TextField(Component):
 
     def blit(self, wrapper: ScreenWrapper):
         wrapper.addstr(self.prefix, 0, 0, color=curses.color_pair(4) if self.focused else wrapper.default_color)
-        wrapper.addstr(self.text[:(self.width - len(self.prefix))],
+        max_width = self.width - len(self.prefix)
+        wrapper.addstr(self.text[max(len(self.text) - max_width, 0):],
                        color=self.color if self.color is not None else wrapper.default_color)
 
     def handle_key(self, keycode):
