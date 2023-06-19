@@ -71,13 +71,19 @@ def construct_ui():
     countdown_pane = VPane()
     end_of_school_year = Countdown(datetime.datetime(year=2023, month=6, day=23, hour=12, minute=0, second=0),
                                    "End of school year")
-    end_of_school_year.preferred_height = 3
+    end_of_year = Countdown(datetime.datetime(year=2024, month=1, day=1, hour=0, minute=0, second=0),
+                            "End of year")
     nearest_weekend = Countdown(None, "Weekend")
+
+    end_of_year.preferred_height = 3
+    end_of_school_year.preferred_height = 3
     nearest_weekend.preferred_height = 3
 
     countdown_pane.append(end_of_school_year)
     countdown_pane.append(Blank(1, 1))
     countdown_pane.append(nearest_weekend)
+    countdown_pane.append(Blank(1, 1))
+    countdown_pane.append(end_of_year)
 
     main_content_pane.append(current_lessons)
     main_content_pane.append(Separator(orientation=Orientation.VERTICAL, width=1))
@@ -87,7 +93,7 @@ def construct_ui():
     root_pane.append(main_content_pane)
     root_pane.append(command_field)
 
-    return root_pane, fps_label, current_period, before_periods, after_periods, end_of_school_year, nearest_weekend
+    return root_pane, fps_label, current_period, before_periods, after_periods, end_of_school_year, nearest_weekend, end_of_year
 
 
 def populate_past_and_future_interval_lists(period_index, before_periods, after_periods):
@@ -130,7 +136,7 @@ def main(stdscr):
     fps_counter = FPSCounter()
     init_colours()
     init_command_processor()
-    ui, fps_label, current_period, before_periods, after_periods, end_of_school_year, nearest_weekend = construct_ui()
+    ui, fps_label, current_period, before_periods, after_periods, end_of_school_year, nearest_weekend, end_of_year = construct_ui()
     app_manager = ApplicationManager(ui, stdscr)
     curses.curs_set(0)
     stdscr.keypad(True)
@@ -149,9 +155,11 @@ def main(stdscr):
 
         end_of_school_year.now = now
         nearest_weekend.now = now
+        end_of_year.now = now
         nearest_weekend.target = find_nearest_weekend(now)
         end_of_school_year.update()
         nearest_weekend.update()
+        end_of_year.update()
 
         fps_label.text = f'{fps_counter.fps():,d} fps | {fps_counter.last_frame_time() / 1_000_000:.2f}ms'
 
